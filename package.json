@@ -12,6 +12,7 @@
     "unplugin": "^2.2.0"
   },
   "devDependencies": {
+    "@types/eslint-config-prettier": "^6.11.3",
     "@types/node": "^22.13.4",
     "eslint": "^9.20.1",
     "eslint-config-flat-gitignore": "^2.0.0",

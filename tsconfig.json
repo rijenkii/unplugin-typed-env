@@ -3,7 +3,7 @@
     "outDir": "dist",
     "declaration": true,
     "target": "ESNext",
-    "lib": ["ESNext", "ES2022.Error"],
+    "lib": ["ESNext"],
     "module": "NodeNext",
     "moduleResolution": "nodenext",
     "types": ["node"],
@@ -14,7 +14,8 @@
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "skipDefaultLibCheck": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "allowJs": true
   },
   "include": ["src", "*.config.*"]
 }
