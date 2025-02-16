@@ -1,21 +1,7 @@
 {
-  "compilerOptions": {
-    "outDir": "dist",
-    "declaration": true,
-    "target": "ESNext",
-    "lib": ["ESNext"],
-    "module": "NodeNext",
-    "moduleResolution": "nodenext",
-    "types": ["node"],
-    "esModuleInterop": true,
-    "strict": true,
-    "exactOptionalPropertyTypes": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "skipDefaultLibCheck": true,
-    "skipLibCheck": true,
-    "allowJs": true
-  },
-  "include": ["src", "*.config.*"]
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.lib.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
 }

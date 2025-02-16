@@ -16,15 +16,62 @@ export type Field = {
 };
 
 type BaseOptions<Default> =
-  | { optional?: false; default?: never }
-  | { optional: true; default?: Default };
+  | {
+      /**
+       * Make the field optional.
+       * @default false
+       */
+      optional?: false;
+      default?: never;
+    }
+  | {
+      optional: true;
+      /**
+       * Default value to use in case the environment variable was not set.
+       * @default undefined
+       */
+      default?: Default;
+    };
 
+/**
+ * Generate a source of a TypeScript type for the field based on the base type
+ * and field options.
+ * 
+ * @param baseType Base TypeScript field type.
+ * @param options Field options passed by the user.
+ * @returns 
+
+* @example
+ * ```typescript
+ * > makeType("string")
+ * "string"
+ * 
+ * > makeType("number", { optional: true })
+ * "number | undefined"
+ * 
+ * > makeType('"value1" | "value2"', { optional: true, default: "value2" })
+ * '"value1" | "value2"'
+ * ```
+ */
 function makeType(baseType: string, options?: BaseOptions<unknown>) {
   return (
     baseType + (options?.optional && !options.default ? " | undefined" : "")
   );
 }
 
+/**
+ * Generate a function to parse environment variable and return the source code
+ * to embed into the generated JS file.
+ *
+ * @typeParam T Type of the parsed value.
+ * @typeParam O Type of the field options.
+ * @param options Field options passed by the user.
+ * @param rawToValue Function for parsing and converting the raw string from the
+ *                   environment into the value of type T.
+ * @param valueToSrc Function for convering the value of type T into the source
+ *                   string.
+ * @returns Function, receiving raw env variable and returning value source code.
+ */
 function makeParse<T, O extends BaseOptions<T>>(
   options: O | undefined,
   rawToValue: (raw: string) => T,
@@ -49,8 +96,23 @@ function makeParse<T, O extends BaseOptions<T>>(
 }
 
 export const envField = {
+  /**
+   * Ensure that the environment variable is a valid string.
+   *
+   * @param options Field options.
+   * @returns String field.
+   */
   string: (
-    options?: BaseOptions<string> & { minLength?: number; maxLength?: number },
+    options?: BaseOptions<string> & {
+      /**
+       * Minimum allowed string length, inclusive.
+       */
+      minLength?: number;
+      /**
+       * Maximum allowed string length, inclusive.
+       */
+      maxLength?: number;
+    },
   ): Field => ({
     type: makeType("string", options),
     parse: makeParse(options, (raw) => {
@@ -68,27 +130,61 @@ export const envField = {
     }),
   }),
 
+  /**
+   * Ensure that the environment variable is a valid URL.
+   *
+   * @param options Field options.
+   * @returns URL field.
+   */
   url: (
-    options?: BaseOptions<URL> & { minLength?: number; maxLength?: number },
+    options?: BaseOptions<URL> & {
+      /**
+       * Minimum allowed URL length, inclusive.
+       */
+      minLength?: number;
+      /**
+       * Maximum allowed URL length, inclusive.
+       */
+      maxLength?: number;
+    },
   ): Field => ({
     type: makeType("URL", options),
-    parse: makeParse(options, (raw) => {
-      const { minLength, maxLength } = options ?? {};
-      const value = raw;
+    parse: makeParse(
+      options,
+      (raw) => {
+        const { minLength, maxLength } = options ?? {};
+        const value = raw;
 
-      if (minLength !== undefined && value.length <= minLength) {
-        throw new Error(`Min length ${minLength}, got ${value.length}`);
-      }
-      if (maxLength !== undefined && value.length >= maxLength) {
-        throw new Error(`Max length ${maxLength}, got ${value.length}`);
-      }
+        if (minLength !== undefined && value.length <= minLength) {
+          throw new Error(`Min length ${minLength}, got ${value.length}`);
+        }
+        if (maxLength !== undefined && value.length >= maxLength) {
+          throw new Error(`Max length ${maxLength}, got ${value.length}`);
+        }
 
-      return new URL(value);
-    }),
+        return new URL(value);
+      },
+      (value) => `new URL(${JSON.stringify(value)})`,
+    ),
   }),
 
+  /**
+   * Ensure that the environment variable is a valid URL.
+   *
+   * @param options Field options.
+   * @returns Number field.
+   */
   number: (
-    options?: BaseOptions<number> & { min?: number; max?: number },
+    options?: BaseOptions<number> & {
+      /**
+       * Minimum allowed value, inclusive.
+       */
+      min?: number;
+      /**
+       * Maximum allowed value, inclusive.
+       */
+      max?: number;
+    },
   ): Field => ({
     type: makeType("number"),
     parse: makeParse(options, (raw) => {
@@ -109,6 +205,13 @@ export const envField = {
     }),
   }),
 
+  /**
+   * Ensure that the environment variable is a valid boolean.
+   * Allowed values: "true", "false".
+   *
+   * @param options Field options.
+   * @returns Boolean field.
+   */
   boolean: (options?: BaseOptions<boolean>): Field => ({
     type: makeType("boolean"),
     parse: makeParse(options, (raw) => {
@@ -121,6 +224,13 @@ export const envField = {
     }),
   }),
 
+  /**
+   * Ensure that the environment variable is a valid string enum.
+   *
+   * @param variants List of allowed values.
+   * @param options Field options.
+   * @returns String enum field.
+   */
   enum: <U extends string, T extends [U, ...U[]]>(
     variants: T,
     options?: BaseOptions<T[number]>,

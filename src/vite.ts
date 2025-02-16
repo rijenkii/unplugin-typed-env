@@ -1,3 +1,8 @@
-import { unplugin } from "./index.js";
+import { Plugin } from "vite";
 
-export default unplugin.vite;
+import { Options, unplugin } from "./index.js";
+
+const default_: (options: Options) => Plugin<unknown> | Plugin<unknown>[] =
+  unplugin.vite;
+
+export default default_;

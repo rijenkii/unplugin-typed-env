@@ -17,7 +17,7 @@ export type Options = {
   dts?: string;
 };
 
-export function generateJavaScriptFile(schema: Record<string, Field>) {
+export function generateJavaScriptFile(schema: Record<string, Field>): string {
   let jsSrc = "";
   for (const [fieldName, field] of Object.entries(schema)) {
     try {
@@ -33,7 +33,7 @@ export function generateJavaScriptFile(schema: Record<string, Field>) {
   return jsSrc;
 }
 
-export function generateDefinitionsFile(schema: Record<string, Field>) {
+export function generateDefinitionsFile(schema: Record<string, Field>): string {
   let dtsSrc = "";
   dtsSrc += "/* eslint-disable */\n";
   dtsSrc += "/* prettier-ignore */\n";
@@ -60,15 +60,19 @@ export const unpluginFactory: UnpluginFactory<Options> = (options) => {
 
   fs.writeFileSync(dts, dtsSrc);
 
+  function resolveId(id: string) {
+    if (id !== virtualModuleId) return;
+    return resolvedVirtualModuleId;
+  }
+
+  function load(id: string) {
+    if (id !== resolvedVirtualModuleId) return;
+    return jsSrc;
+  }
+
   return {
     name: "unplugin-typed-env",
-    resolveId(id) {
-      if (id !== virtualModuleId) return;
-      return resolvedVirtualModuleId;
-    },
-    load(id) {
-      if (id !== resolvedVirtualModuleId) return;
-      return jsSrc;
-    },
+    resolveId,
+    load,
   };
 };
