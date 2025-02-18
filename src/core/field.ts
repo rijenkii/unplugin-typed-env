@@ -53,7 +53,10 @@ type BaseOptions<Default> =
  * '"value1" | "value2"'
  * ```
  */
-function makeType(baseType: string, options?: BaseOptions<unknown>) {
+export function makeType(
+  baseType: string,
+  options?: BaseOptions<unknown>,
+): string {
   return (
     baseType + (options?.optional && !options.default ? " | undefined" : "")
   );
@@ -72,7 +75,7 @@ function makeType(baseType: string, options?: BaseOptions<unknown>) {
  *                   string.
  * @returns Function, receiving raw env variable and returning value source code.
  */
-function makeParse<T, O extends BaseOptions<T>>(
+export function makeParse<T, O extends BaseOptions<T>>(
   options: O | undefined,
   rawToValue: (raw: string) => T,
   valueToSrc: (value: T) => string = (value) => JSON.stringify(value),

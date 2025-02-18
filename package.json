@@ -1,7 +1,20 @@
 {
   "name": "unplugin-typed-env",
-  "version": "1.0.0",
+  "version": "1.0.0-beta.0",
   "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "import": "./dist/vite.js"
+    }
+  },
   "scripts": {
     "build": "run-s _build:rm-dist _build:emit",
     "_build:rm-dist": "rimraf dist",
@@ -16,6 +29,7 @@
   "devDependencies": {
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/node": "^22.13.4",
+    "@vitest/coverage-v8": "^3.0.5",
     "eslint": "^9.20.1",
     "eslint-config-flat-gitignore": "^2.0.0",
     "eslint-config-prettier": "^10.0.1",
@@ -26,7 +40,8 @@
     "rimraf": "^6.0.1",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.24.0",
-    "vite": "^6.1.0"
+    "vite": "^6.1.0",
+    "vitest": "^3.0.5"
   },
   "peerDependencies": {
     "vite": ">=3"

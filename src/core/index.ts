@@ -7,16 +7,6 @@ import type { Field } from "./field.js";
 const virtualModuleId = "virtual:typed-env";
 const resolvedVirtualModuleId = "\0" + virtualModuleId;
 
-export type Options = {
-  /** Schema for the environment variable validation. */
-  schema: Record<string, Field>;
-  /**
-   * Location of the generated `.d.ts` file with configuration module type declarations.
-   * @default "./typed-env.d.ts"
-   */
-  dts?: string;
-};
-
 export function generateJavaScriptFile(schema: Record<string, Field>): string {
   let jsSrc = "";
   for (const [fieldName, field] of Object.entries(schema)) {
@@ -56,9 +46,20 @@ export function generateDefinitionsFile(schema: Record<string, Field>): string {
   return dtsSrc;
 }
 
-export const unpluginFactory: UnpluginFactory<Options> = (options) => {
-  const { schema, dts = "./typed-env.d.ts" } = options;
+export type Options = {
+  /** Schema for the environment variable validation. */
+  schema: Record<string, Field>;
+  /**
+   * Location of the generated `.d.ts` file with configuration module type declarations.
+   * @default "./typed-env.d.ts"
+   */
+  dts?: string;
+};
 
+export const unpluginFactory: UnpluginFactory<Options> = ({
+  schema,
+  dts = "./typed-env.d.ts",
+}) => {
   const jsSrc = generateJavaScriptFile(schema);
   const dtsSrc = generateDefinitionsFile(schema);
 
