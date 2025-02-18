@@ -18,7 +18,7 @@
   "scripts": {
     "build": "run-s _build:rm-dist _build:emit",
     "_build:rm-dist": "rimraf dist",
-    "_build:emit": "tsc --project tsconfig.lib.json",
+    "_build:emit": "tsc --project tsconfig.emit.json",
     "lint": "eslint --fix .",
     "format": "prettier --write .",
     "type-check": "tsc --noEmit",
