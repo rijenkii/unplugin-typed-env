@@ -44,11 +44,15 @@ export function generateDefinitionsFile(schema: Record<string, Field>): string {
   dtsSrc +=
     '// Make sure to add this file to your tsconfig.json file as an "includes" or "files" entry."\n';
   dtsSrc += "\n";
+  dtsSrc += 'declare module "virtual:typed-env" {\n';
 
   for (const [fieldName, field] of Object.entries(schema)) {
     const fieldType = field.type;
     dtsSrc += `export const ${fieldName}: ${fieldType};\n`;
   }
+
+  dtsSrc += "}\n";
+
   return dtsSrc;
 }
 
