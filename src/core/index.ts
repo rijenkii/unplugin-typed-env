@@ -60,10 +60,10 @@ export const unpluginFactory: UnpluginFactory<Options> = ({
   schema,
   dts = "./typed-env.d.ts",
 }) => {
-  const jsSrc = generateJavaScriptFile(schema);
   const dtsSrc = generateDefinitionsFile(schema);
-
   fs.writeFileSync(dts, dtsSrc);
+
+  const jsSrc = generateJavaScriptFile(schema);
 
   function resolveId(id: string) {
     if (id !== virtualModuleId) return;
